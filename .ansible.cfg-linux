@@ -1,0 +1,22 @@
+# Create ~/.ansible.cfg
+[defaults]
+inventory = ~/.ansible/hosts
+host_key_checking = False
+callback_whitelist = profile_tasks, timer
+stdout_callback = yaml
+roles_path = ~/.ansible/roles
+collections_path = ~/.ansible/collections
+remote_user = ansible
+private_key_file = ~/.ssh/id_rsa
+vault_password_file = ~/.ansible/vault_pass
+
+[privilege_escalation]
+become = True
+become_method = sudo
+become_user = root
+become_ask_pass = False
+
+[ssh_connection]
+ssh_args = -o ControlMaster=auto -o ControlPersist=60s -o UserKnownHostsFile=/dev/null
+control_path_dir = ~/.ansible/cp
+pipelining = True

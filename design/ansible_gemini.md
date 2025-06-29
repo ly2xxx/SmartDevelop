@@ -42,13 +42,41 @@ ssh_args = -o ControlMaster=auto -o ControlPersist=60s -o UserKnownHostsFile=/de
 control_path_dir = ~/.ansible/cp
 pipelining = True
 ```
+```
+Line-by-Line Explanation
+[defaults] Section
+inventory = ~/.ansible/hosts - Specifies the default inventory file location containing host information
+host_key_checking = False - Disables SSH host key verification (useful for dynamic environments but less secure)
+callback_whitelist = profile_tasks, timer - Enables plugins to show task execution times and profiling
+stdout_callback = yaml - Changes output format to YAML for better readability
+roles_path = ~/.ansible/roles - Directory where Ansible looks for roles
+collections_path = ~/.ansible/collections - Directory for Ansible collections
+remote_user = ansible - Default username for SSH connections to managed hosts
+private_key_file = ~/.ssh/id_rsa - SSH private key file for authentication
+vault_password_file = ~/.ansible/vault_pass - File containing password for Ansible Vault encryption
+[privilege_escalation] Section
+become = True - Enables privilege escalation by default
+become_method = sudo - Uses sudo for privilege escalation
+become_user = root - Escalates privileges to root user
+become_ask_pass = False - Doesn't prompt for sudo password (assumes passwordless sudo)
+[ssh_connection] Section
+ssh_args = -o ControlMaster=auto -o ControlPersist=60s -o UserKnownHostsFile=/dev/null - SSH optimization options:
+ControlMaster=auto - Enables SSH connection multiplexing
+ControlPersist=60s - Keeps connections alive for 60 seconds
+UserKnownHostsFile=/dev/null - Ignores known_hosts file
+control_path_dir = ~/.ansible/cp - Directory for SSH control sockets
+pipelining = True - Enables SSH pipelining for better performance
+```
 
 ### SSH Key Management and Distribution
 
 **Generate and Configure SSH Keys:**
 ```bash
-# Generate SSH key pair for Ansible automation
+# Generate SSH key pair for Ansible automation on WSL2
 ssh-keygen -t rsa -b 4096 -C "ansible-automation@wsl2" -f ~/.ssh/ansible_rsa
+
+# Generate SSH key pair for Ansible automation on windows 11 powershell
+ssh-keygen -t rsa -b 4096 -C "ansible-control-node"
 
 # Add to SSH agent
 eval "$(ssh-agent -s)"
