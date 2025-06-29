@@ -1,0 +1,32 @@
+---
+- name: Simple Hello World Windows Playbook
+  hosts: windows
+  gather_facts: no  # Disable fact gathering to avoid timeout issues
+  tasks:
+    - name: Test basic connectivity
+      win_ping:
+
+    - name: Display simple hello message
+      win_shell: |
+        Write-Host "Hello World from Ansible!"
+        Write-Host "Current date: $(Get-Date)"
+        Write-Host "Computer: $env:COMPUTERNAME"
+      register: hello_output
+
+    - name: Show the output
+      debug:
+        var: hello_output.stdout_lines
+
+    - name: Create a simple test file
+      win_copy:
+        content: "Hello from Ansible! Created at $(Get-Date)"
+        dest: C:\ansible-test.txt
+
+    - name: Verify file exists
+      win_stat:
+        path: C:\ansible-test.txt
+      register: file_check
+
+    - name: Display success message
+      debug:
+        msg: "Success! File created: {{ file_check.stat.exists }}"

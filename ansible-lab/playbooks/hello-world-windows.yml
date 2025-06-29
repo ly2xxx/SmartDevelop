@@ -1,0 +1,52 @@
+---
+- name: Hello World Windows Playbook
+  hosts: windows
+  gather_facts: yes
+  tasks:
+    - name: Display hello world message
+      win_shell: |
+        Write-Host "Hello World from Ansible!"
+        Write-Host "Current date and time: $(Get-Date)"
+        Write-Host "Computer name: $env:COMPUTERNAME"
+        Write-Host "Current user: $env:USERNAME"
+        Write-Host "Windows version: $(Get-WmiObject -Class Win32_OperatingSystem | Select-Object -ExpandProperty Caption)"
+      register: hello_output
+
+    - name: Show the output
+      debug:
+        var: hello_output.stdout_lines
+
+    - name: Create a test file
+      win_copy:
+        content: |
+          Hello from Ansible!
+          Generated on {{ ansible_date_time.iso8601 }}
+          Managed node: {{ ansible_hostname }}
+        dest: C:\ansible-hello-world.txt
+
+    - name: Verify file was created
+      win_stat:
+        path: C:\ansible-hello-world.txt
+      register: file_status
+
+    - name: Display file creation status
+      debug:
+        msg: "File created successfully: {{ file_status.stat.exists }}"
+
+    - name: Get system information
+      win_shell: |
+        Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, TotalPhysicalMemory | ConvertTo-Json
+      register: system_info
+
+    - name: Display system information
+      debug:
+        msg: "System Info: {{ system_info.stdout | from_json }}"
+
+    - name: List running services (top 5)
+      win_shell: |
+        Get-Service | Where-Object {$_.Status -eq "Running"} | Select-Object -First 5 Name, Status | ConvertTo-Json
+      register: services_info
+
+    - name: Display running services
+      debug:
+        msg: "Top 5 Running Services: {{ services_info.stdout | from_json }}"
