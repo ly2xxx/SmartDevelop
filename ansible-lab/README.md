@@ -1,3 +1,5 @@
+https://www.thomaspreischl.de/ansible-wsl-windows/
+
 # install-wsl-and-ansible
 The scripts will help you to install ansible on WSL (Windows Subsystem for Linux).
 
